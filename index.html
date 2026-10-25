@@ -74,7 +74,25 @@
                 </div>
             </div>
         </section>
-
+        
+<section class="embed-tools" style="padding:16px; background:#181818; color:white;">
+  <h3>Reproduzir vídeo externo</h3>
+  <input
+    id="embed-url"
+    type="url"
+    placeholder="Cole o link de incorporação HTTPS"
+    style="width:100%; padding:12px; box-sizing:border-box;"
+  >
+  <button
+    id="load-embed"
+    type="button"
+    style="padding:12px; margin-top:8px;"
+  >
+    Carregar vídeo externo
+  </button>
+  <p id="embed-status">Cole um link de incorporação permitido.</p>
+  <div id="embed-container"></div>
+</section>
         <section class="file-bar">
             <div>
                 <p class="file-label">NOW PLAYING</p>
@@ -134,5 +152,55 @@
     </main>
 
     <div class="toast" id="toast"></div>
+
+<script>
+const embedInput = document.getElementById("embed-url");
+const embedButton = document.getElementById("load-embed");
+const embedContainer = document.getElementById("embed-container");
+const embedStatus = document.getElementById("embed-status");
+
+embedButton.addEventListener("click", function () {
+  let url;
+
+  try {
+    url = new URL(embedInput.value.trim());
+  } catch {
+    embedStatus.textContent = "Cole um link de incorporação válido.";
+    return;
+  }
+
+  if (url.protocol !== "https:") {
+    embedStatus.textContent = "Use um link HTTPS.";
+    return;
+  }
+
+  const allowedHosts = [
+    "www.youtube-nocookie.com",
+    "www.youtube.com",
+    "www.youtube.com",
+    "player.vimeo.com",
+    "www.dailymotion.com",
+    "geo.dailymotion.com"
+  ];
+
+  if (!allowedHosts.includes(url.hostname)) {
+    embedStatus.textContent =
+      "Esta plataforma não está na lista permitida. Use um embed de uma plataforma confiável.";
+    return;
+  }
+
+  const frame = document.createElement("iframe");
+  frame.src = url.href;
+  frame.title = "Vídeo incorporado";
+  frame.allow = "fullscreen; picture-in-picture";
+  frame.allowFullscreen = true;
+  frame.style.width = "100%";
+  frame.style.aspectRatio = "16 / 9";
+  frame.style.border = "0";
+
+  embedContainer.replaceChildren(frame);
+  embedStatus.textContent = "Vídeo incorporado carregado.";
+});
+</script>
 </body>
 </html>
